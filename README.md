@@ -10,6 +10,7 @@ ComputerCraft computers and turtles.
 |---|---|
 | `src/LiteModClaudeBridge.java` | LiteLoader mod: token-protected HTTP API on `127.0.0.1:25599` (state, blocks, chat, screenshots, walking, placing/digging, containers, ComputerCraft screen/keys) |
 | `build.sh` | Builds `mod-claudebridge-0.1.litemod` (`./build.sh install` copies it into the instance) |
+| `mcp-server.mjs` | **MCP server** (stdio, Node 18+, no dependencies) – 26 tools: `mc_state`, `mc_screenshot`, `mc_goto`, `mc_place`, `cc_screen`, `cc_type`, … |
 | `mc` | Shell CLI for the API – run `./mc` for the command list |
 | `cb.lua`, `cc_transfer.py` | Checksum-verified file transfer to/from ComputerCraft computers |
 | `chatgpt-bridge.mjs` | Optional local web chat using the OpenAI Responses API ([README](README-chatgpt-bridge.md)) |
@@ -23,12 +24,28 @@ ComputerCraft computers and turtles.
 
 ### Claude Code
 ```bash
-mkdir -p ~/.claude/skills && cp -R skills/minecraft-bridge ~/.claude/skills/
+claude mcp add --scope user tekkit-lite -- node /path/to/tekkit-lite-mcp/mcp-server.mjs
 ```
+Optional: `cp -R skills/minecraft-bridge ~/.claude/skills/` for extra workflow tips.
 
 ### Codex
-Codex reads `AGENTS.md` in this repo. Start Codex in this folder, or copy `skills/minecraft-bridge/SKILL.md`
-into your global `~/.codex/AGENTS.md`.
+```bash
+codex mcp add tekkit-lite -- node /path/to/tekkit-lite-mcp/mcp-server.mjs
+```
+or in `~/.codex/config.toml`:
+```toml
+[mcp_servers.tekkit-lite]
+command = "node"
+args = ["/path/to/tekkit-lite-mcp/mcp-server.mjs"]
+```
+
+### Claude Desktop
+In `claude_desktop_config.json`:
+```json
+{ "mcpServers": { "tekkit-lite": { "command": "node", "args": ["/path/to/tekkit-lite-mcp/mcp-server.mjs"] } } }
+```
+
+Set `MC_INSTANCE` (env) if your instance folder is not the default Prism `Lycodon-Client(1)` path.
 
 ## Security
 The API listens only on localhost and requires the per-start token (`X-Token` header). No API keys are stored in this repo.
